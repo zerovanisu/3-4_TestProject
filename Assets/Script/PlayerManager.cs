@@ -8,12 +8,17 @@ public class PlayerManager : MonoBehaviour
     [SerializeField]
     float Speed_P;
 
-    [Header("ジャンプ力")]
+    [Header("ダッシュ速度")]
     [SerializeField]
-    float Jump_P;
+    float Speed_D;
 
+    [Header("ジャンプする高さ")]
     [SerializeField]
     float Jump_Max;
+
+    [Header("ジャンプするスピード")]
+    [SerializeField]
+    float Jump_Speed;
 
     [Header("重力")]
     [SerializeField]
@@ -23,12 +28,17 @@ public class PlayerManager : MonoBehaviour
     [SerializeField]
     public bool Not_Gravity;
 
+    [Header("接地しているか")]
+    [SerializeField]
+    public bool IsGround;
+
     float Horizontal;
     float Vertical;
-    float Jump_keep;
+    float Jump_Keep;
     float Gravity_P;
 
     public bool Jumoing;
+    public bool Player_Dash;
 
     Rigidbody2D Rb;
 
@@ -43,13 +53,28 @@ public class PlayerManager : MonoBehaviour
         //入力受付
         Horizontal = Input.GetAxis("Horizontal_P");
         Vertical = Input.GetAxis("Vertical_P");
+
+        //ダッシュ入力
+        if (Input.GetButton("Button_L")) { Player_Dash = true; }
+        else if (Input.GetButtonUp("Button_L")) { Player_Dash = false; }
+
+        //ジャンプ入力
         if (Input.GetButtonDown("Button_B"))
         {
-            Jumoing = true;
+            //接地していたらジャンプ実行可能
+            if(IsGround == true)
+            {
+                //飛べる高さを計算(今の高さからJump_Keepまで飛べる)
+                Jump_Keep = transform.position.y + Jump_Max;
+
+                Jumoing = true;
+                Not_Gravity = true;
+            }
         }
         if (Input.GetButtonUp("Button_B"))
         {
             Jumoing = false;
+            Not_Gravity = false;
         }
     }
 
@@ -62,9 +87,18 @@ public class PlayerManager : MonoBehaviour
 
     void Move()
     {
-        float SPVector = Speed_P * Horizontal;
+        if(Player_Dash == false)
+        {
+            float SPVector = Speed_P * Horizontal;
 
-        Rb.velocity = new Vector2(SPVector, transform.position.y);
+            Rb.velocity = new Vector2(SPVector, transform.position.y);
+        }
+        else
+        {
+            float SDVector = Speed_D * Horizontal;
+
+            Rb.velocity = new Vector2(SDVector, transform.position.y);
+        }
 
         //向きを変える
         if(Horizontal < 0)
@@ -79,18 +113,17 @@ public class PlayerManager : MonoBehaviour
 
     void Jump()
     {
-        //ジャンプ力を保持
-        Jump_keep = Jump_P;
-
-        if(Jumoing == false)
+        //ジャンプボタンが押された&高さが飛べる限界に達していないとき
+        if(Jumoing == true && transform.position.y < Jump_Keep)
         {
-
+            //飛び続ける
+            Rb.velocity = new Vector2(Rb.velocity.x, Jump_Speed);
         }
         else
         {
-
+            Jumoing = false;
+            Not_Gravity = false;
         }
-        
     }
 
     void Gravity()
