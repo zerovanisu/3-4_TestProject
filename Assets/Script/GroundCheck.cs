@@ -7,15 +7,15 @@ public class GroundCheck : MonoBehaviour
     [SerializeField]
     PlayerManager PM;
 
-    private void OnCollisionStay2D(Collision2D collision)
+    private void OnTriggerStay2D(Collider2D collision)
     {
-        if(collision.gameObject.tag =="Ground")
+        if (collision.gameObject.tag == "Ground")
         {
             PM.IsGround = true;
         }
     }
 
-    private void OnCollisionExit2D(Collision2D collision)
+    private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "Ground")
         {

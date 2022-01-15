@@ -58,17 +58,19 @@ public class PlayerManager : MonoBehaviour
         if (Input.GetButton("Button_L")) { Player_Dash = true; }
         else if (Input.GetButtonUp("Button_L")) { Player_Dash = false; }
 
-        //ジャンプ入力
-        if (Input.GetButtonDown("Button_B"))
+        //接地している時
+        if (IsGround == true)
         {
-            //接地していたらジャンプ実行可能
-            if(IsGround == true)
+            //重力の影響を無くす(下に引っ張らないようにする)
+            Not_Gravity = true;
+
+            //ジャンプ入力
+            if (Input.GetButtonDown("Button_B"))
             {
                 //飛べる高さを計算(今の高さからJump_Keepまで飛べる)
                 Jump_Keep = transform.position.y + Jump_Max;
 
                 Jumoing = true;
-                Not_Gravity = true;
             }
         }
         if (Input.GetButtonUp("Button_B"))
@@ -83,6 +85,7 @@ public class PlayerManager : MonoBehaviour
         Move();
         Gravity();
         Jump();
+        Debug.Log(Rb.velocity);
     }
 
     void Move()
@@ -91,13 +94,13 @@ public class PlayerManager : MonoBehaviour
         {
             float SPVector = Speed_P * Horizontal;
 
-            Rb.velocity = new Vector2(SPVector, transform.position.y);
+            Rb.velocity = new Vector2(SPVector, 0);
         }
         else
         {
             float SDVector = Speed_D * Horizontal;
 
-            Rb.velocity = new Vector2(SDVector, transform.position.y);
+            Rb.velocity = new Vector2(SDVector, 0);
         }
 
         //向きを変える
@@ -134,11 +137,11 @@ public class PlayerManager : MonoBehaviour
             //現在の高さから重力加速度を差し引いた分の座標に置き換える
             float Gravity_total = transform.position.y - Gravity_P;
 
-            transform.position = new Vector2(transform.position.x, Gravity_total);
+            Rb.velocity = new Vector2(Rb.velocity.x,Gravity_total);
         }
         else
         {
-            transform.position = new Vector2(transform.position.x, transform.position.y);
+            Rb.velocity = new Vector2(Rb.velocity.x, 0);
         }
     }
 }
