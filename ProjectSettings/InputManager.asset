@@ -505,7 +505,7 @@ InputManager:
     m_Name: Button_B
     descriptiveName: 
     descriptiveNegativeName: 
-    negativeButton: x
+    negativeButton: 
     positiveButton: x
     altNegativeButton: 
     altPositiveButton: 
@@ -522,7 +522,7 @@ InputManager:
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: 
+    positiveButton: c
     altNegativeButton: 
     altPositiveButton: 
     gravity: 1000
@@ -538,7 +538,7 @@ InputManager:
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: 
+    positiveButton: v
     altNegativeButton: 
     altPositiveButton: 
     gravity: 1000

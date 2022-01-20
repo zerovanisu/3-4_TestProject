@@ -4,6 +4,26 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
+    [Header("最大HP")]
+    [SerializeField]
+    public float Player_HPMax;
+
+    [Header("最大MP")]
+    [SerializeField]
+    public float Player_MPMax;
+
+    [Header("現在のHP")]
+    [SerializeField]
+    public float Player_HP;
+
+    [Header("現在のMP")]
+    [SerializeField]
+    public float Player_MP;
+
+    [Header("攻撃力")]
+    [SerializeField]
+    public float Player_Attack;
+
     [Header("速力")]
     [SerializeField]
     float Speed_P;
@@ -24,28 +44,45 @@ public class PlayerManager : MonoBehaviour
     [SerializeField]
     float GravityScale;
 
-    [Header("重力の影響を受けているか")]
+    [Header("弾(つらら)")]
     [SerializeField]
-    public bool Not_Gravity;
+    public GameObject Turara;
 
-    [Header("接地しているか")]
+    [Header("リロードタイム")]
     [SerializeField]
-    public bool IsGround;
+    float Reload_Time;
 
+    [Header("参照用")]
+    [SerializeField]
+    public GameObject Shot_Point;
+
+    [System.NonSerialized]
     float Horizontal;
     float Vertical;
     float Jump_Keep;
     float Gravity_P;
+    float Reloading_Time;
 
-    public bool Jumoing;
-    public bool Player_Dash;
+    [System.NonSerialized]
+    public bool Not_Gravity, IsGround, Jumoing, Player_Dash;
+
+    Animator Anim;
 
     Rigidbody2D Rb;
+
+    private Vector2 Size;//大きさを保存
 
     void Start()
     {
         Rb = GetComponent<Rigidbody2D>();
         Gravity_P = GravityScale;//重力を取得
+        Anim = GetComponent<Animator>();
+
+        Size = transform.localScale;//大きさを保存
+
+        //ステータスを反映
+        Player_HP = Player_HPMax;
+        Player_MP = Player_MPMax;
     }
 
     void Update()
@@ -78,6 +115,8 @@ public class PlayerManager : MonoBehaviour
             Jumoing = false;
             Not_Gravity = false;
         }
+
+        Shot();
     }
 
     private void FixedUpdate()
@@ -85,7 +124,6 @@ public class PlayerManager : MonoBehaviour
         Move();
         Gravity();
         Jump();
-        Debug.Log(Rb.velocity);
     }
 
     void Move()
@@ -106,11 +144,11 @@ public class PlayerManager : MonoBehaviour
         //向きを変える
         if(Horizontal < 0)
         {
-            //右向き
+            transform.localScale = new Vector2(Size.x,Size.y);
         }
         else if(Horizontal > 0)
         {
-            //左向き
+            transform.localScale = new Vector2(-Size.x, Size.y);
         }
     }
 
@@ -121,11 +159,13 @@ public class PlayerManager : MonoBehaviour
         {
             //飛び続ける
             Rb.velocity = new Vector2(Rb.velocity.x, Jump_Speed);
+            Anim.SetBool("Jump",true);
         }
         else
         {
             Jumoing = false;
             Not_Gravity = false;
+            Anim.SetBool("Jump", false);
         }
     }
 
@@ -142,6 +182,41 @@ public class PlayerManager : MonoBehaviour
         else
         {
             Rb.velocity = new Vector2(Rb.velocity.x, 0);
+        }
+    }
+
+    void Shot()
+    {
+        //射撃
+        if (Input.GetButtonDown("Button_Y") && Reloading_Time <= 0)
+        {
+            GameObject Bullet = Instantiate(Turara);
+
+            //生成位置を代入
+            Bullet.transform.position = Shot_Point.transform.position;
+
+            //右を向いていたら右向き、左を向いていたら左向きにする
+            if(this.transform.localScale.x >0)
+            {
+                Bullet.GetComponent<TuraraManager>().Direction = -1;//飛ぶ向き
+                Bullet.transform.rotation = Quaternion.Euler(0, 0, 270);//画像の向き
+            }
+            else if (this.transform.localScale.x < 0)
+            {
+                Bullet.GetComponent<TuraraManager>().Direction = 1;//飛ぶ向き
+                Bullet.transform.rotation = Quaternion.Euler(0, 0, 90);//画像の向き
+            }
+
+            //ダメージ計算
+            Bullet.GetComponent<TuraraManager>().P_Atack = Player_Attack;
+
+            Reloading_Time = Reload_Time;
+        }
+
+        //リロード
+        if (Reloading_Time >= 0)
+        {
+            Reloading_Time -= Time.deltaTime;
         }
     }
 }
