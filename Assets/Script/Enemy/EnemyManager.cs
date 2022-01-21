@@ -65,6 +65,8 @@ public class EnemyManager : MonoBehaviour
             //プレイヤーが無敵でないならダメージを与える
             if(Player.GetComponent<PlayerManager>().Muteking == false)
             {
+                Sound_Manager.Instance.PlaySE(SE.Damage_P,1,0);
+
                 //相手のステータスを取得
                 int P_Body = Player.GetComponent<PlayerManager>().Player_Body;
 

@@ -130,6 +130,17 @@ public class PlayerManager : MonoBehaviour
             //入力受付
             Horizontal = Input.GetAxis("Horizontal_P");
             Vertical = Input.GetAxis("Vertical_P");
+
+            //射撃
+            if ((Player_MP >= Turara_MP) && Input.GetButton("Button_Y") && (Reloading_Time <= 0))
+            {
+                Shot();
+            }
+            //リロード
+            if (Reloading_Time >= 0)
+            {
+                Reloading_Time -= Time.deltaTime;
+            }
         }
         else
         {
@@ -137,8 +148,8 @@ public class PlayerManager : MonoBehaviour
         }
 
         //ダッシュ入力
-        if (Input.GetButton("Button_L")) { Player_Dash = true; }
-        else if (Input.GetButtonUp("Button_L")) { Player_Dash = false; }
+        if (Input.GetButton("Button_R")) { Player_Dash = true; }
+        else if (Input.GetButtonUp("Button_R")) { Player_Dash = false; }
 
         //接地している時
         if (IsGround == true)
@@ -161,10 +172,6 @@ public class PlayerManager : MonoBehaviour
             Not_Gravity = false;
         }
 
-        if(Player_MP > Turara_MP)
-        {
-            Shot();
-        }
 
         if(Player_HP <= 0)
         {
@@ -258,41 +265,31 @@ public class PlayerManager : MonoBehaviour
 
     void Shot()
     {
-        //射撃
-        if (Input.GetButton("Button_Y") && Reloading_Time <= 0)
+        //MPを消費
+        Player_MP -= Turara_MP;
+
+        //つららを生成
+        GameObject Bullet = Instantiate(Turara);
+
+        //生成位置を代入
+        Bullet.transform.position = Shot_Point.transform.position;
+
+        //右を向いていたら右向き、左を向いていたら左向きにする
+        if (this.transform.localScale.x > 0)
         {
-            //MPを消費
-            Player_MP -= Turara_MP;
-
-            //つららを生成
-            GameObject Bullet = Instantiate(Turara);
-
-            //生成位置を代入
-            Bullet.transform.position = Shot_Point.transform.position;
-
-            //右を向いていたら右向き、左を向いていたら左向きにする
-            if(this.transform.localScale.x >0)
-            {
-                Bullet.GetComponent<TuraraManager>().Direction = -1;//飛ぶ向き
-                Bullet.transform.rotation = Quaternion.Euler(0, 0, 270);//画像の向き
-            }
-            else if (this.transform.localScale.x < 0)
-            {
-                Bullet.GetComponent<TuraraManager>().Direction = 1;//飛ぶ向き
-                Bullet.transform.rotation = Quaternion.Euler(0, 0, 90);//画像の向き
-            }
-
-            //攻撃力を渡す
-            Bullet.GetComponent<TuraraManager>().P_Atack = Player_Attack;
-
-            Reloading_Time = Reload_Time;
+            Bullet.GetComponent<TuraraManager>().Direction = -1;//飛ぶ向き
+            Bullet.transform.rotation = Quaternion.Euler(0, 0, 270);//画像の向き
+        }
+        else if (this.transform.localScale.x < 0)
+        {
+            Bullet.GetComponent<TuraraManager>().Direction = 1;//飛ぶ向き
+            Bullet.transform.rotation = Quaternion.Euler(0, 0, 90);//画像の向き
         }
 
-        //リロード
-        if (Reloading_Time >= 0)
-        {
-            Reloading_Time -= Time.deltaTime;
-        }
+        //攻撃力を渡す
+        Bullet.GetComponent<TuraraManager>().P_Atack = Player_Attack;
+
+        Reloading_Time = Reload_Time;
     }
 
     //被弾した時の処理
