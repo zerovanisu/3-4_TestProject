@@ -36,13 +36,17 @@ public class TitleManager : MonoBehaviour
 
         Scene_Count = Scene_Time;
         Feading = "フェードアウト";
+
+        FeadImage.gameObject.SetActive(true);
+
+        Sound_Manager.Instance.PlayBGM(BGM.Title,0.8f);
     }
 
     private void Update()
     {
         if (Input.GetButtonDown("Button_A"))
         {
-            //Sound_Manager.Instance.PlaySE(SE.);//決定音を鳴らす
+            Sound_Manager.Instance.PlaySE(SE.Select,1f,0f);
             Starting = true;
         }
     }

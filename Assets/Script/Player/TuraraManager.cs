@@ -21,7 +21,7 @@ public class TuraraManager : MonoBehaviour
     void Start()
     {
         Rb = GetComponent<Rigidbody2D>();
-        Sound_Manager.Instance.PlaySE(SE.Turara, 1f, 0f);
+        Sound_Manager.Instance.PlaySE(SE.Turara_Shot, 1f, 0f);
     }
 
     private void FixedUpdate()
@@ -47,6 +47,7 @@ public class TuraraManager : MonoBehaviour
 
             case "Enemy":
                 //効果音
+                Sound_Manager.Instance.PlaySE(SE.Turara_Hit,1,0);
 
                 //相手のステータスを取得
                 int E_Body = collision.gameObject.GetComponent<EnemyManager>().Enemy_Body;

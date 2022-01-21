@@ -88,7 +88,7 @@ public class Sound_Manager : MonoBehaviour
         }
     }
 
-    public bool PlayBGM(BGM bgm)
+    public bool PlayBGM(BGM bgm, float volume)
     {
         // BGMƒ`ƒƒƒlƒ‹‚©‚ç‹ó‚¢‚Ä‚é•û‚ğ’T‚·
         AudioSource freeChannel = null;
@@ -116,6 +116,12 @@ public class Sound_Manager : MonoBehaviour
 
         freeChannel.clip = Resources.Load<AudioClip>("Sound/" + GetAudioClipName(bgm));
         freeChannel.Play();
+
+        //‰¹—Ê‚ğU‚è“–‚Ä‚é
+        freeChannel.volume = volume;
+
+        //‰¹‚ğŒ³‚É–ß‚·(‰¹—Ê)
+        volume = 1; 
 
         return true;
     }
