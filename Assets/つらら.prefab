@@ -145,6 +145,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Speed: 20
-  B_Attack: 5
-  Direction: 0
-  Damage: 0
+  B_Attack: 1
+  P_Atack: 0
+  DamagePoint: 0
