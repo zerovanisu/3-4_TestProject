@@ -27,6 +27,10 @@ public class EnemyManager : MonoBehaviour
     public int DamagePoint;
     public bool Frieze;//停止フラグ
 
+    GameObject Player;
+
+    Vector2 Target_Pos, MyScale;
+
     Renderer Renderer_E;
 
     void Start()
@@ -34,6 +38,8 @@ public class EnemyManager : MonoBehaviour
         Enemy_HP = Enemy_HPMax;
         Renderer_E = GetComponent<SpriteRenderer>();
         Frieze = true;//画面内に入るまで動き始めないようにする
+        Player = GameObject.Find("Player");
+        MyScale = transform.localScale;
     }
 
     void Update()
@@ -55,9 +61,30 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
+    private void FixedUpdate()
+    {
+        //止まっていないときプレイヤーを追う
+        if (Frieze == false)
+        {
+            Target_Pos = new Vector2 (Player.transform.position.x,transform.position.y);
+
+            float MoveVec = Speed_E * Time.deltaTime;
+
+            transform.position = Vector2.MoveTowards(transform.position, Target_Pos, MoveVec);
+
+            if(transform.position.x < Target_Pos.x)
+            {
+                transform.localScale = new Vector2(-MyScale.x, MyScale.y);
+            }
+            else
+            {
+                transform.localScale = new Vector2(MyScale.x,MyScale.y);
+            }
+        }
+    }
+
     private void OnTriggerStay2D(Collider2D collision)
     {
-        //プレイヤーに当たったらダメージを与える
         if(collision.gameObject.tag == "Player")
         {
             GameObject Player = collision.gameObject;
